@@ -1,78 +1,125 @@
-import React, { useRef, useEffect, useState } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faInfoCircle, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Home = () => {
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [emotion, setEmotion] = useState('');
+function Home() {
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                videoRef.current.srcObject = stream;
-                videoRef.current.play();
-            })
-            .catch(err => {
-                console.error("Error accessing the camera: ", err);
-            });
-    }, []);
+  const handleScanClick = () => {
+    navigate('/scan');
+  };
 
-    const captureFrame = () => {
-        const context = canvasRef.current.getContext('2d');
-        context.drawImage(videoRef.current, 0, 0, 640, 480);
-        canvasRef.current.toBlob(blob => {
-            const formData = new FormData();
-            formData.append('file', blob, 'frame.png');
-            axios.post('http://localhost:8000/predict/', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then(response => {
-                setEmotion(response.data.emotion);
-            })
-            .catch(error => {
-                console.error("Error predicting emotion: ", error);
-            });
-        });
-    };
-
-    useEffect(() => {
-        const intervalId = setInterval(captureFrame, 1000); // Capture a frame every second
-        return () => clearInterval(intervalId);
-    }, []);
-
-    return (
-        <div className="flex flex-col h-screen">
-            {/* Navbar */}
-            <nav className="bg-gray-800 p-4">
-                <div className="container mx-auto flex justify-between items-center">
-                    <div className="text-white font-bold text-lg">Emotion Detection App</div>
-                    <div className="flex space-x-4">
-                        <a href="#" className="text-white hover:text-gray-300">
-                            <FontAwesomeIcon icon={faHome} />
-                        </a>
-                        <a href="#" className="text-white hover:text-gray-300">
-                            <FontAwesomeIcon icon={faInfoCircle} />
-                        </a>
-                        <a href="#" className="text-white hover:text-gray-300">
-                            <FontAwesomeIcon icon={faEnvelope} />
-                        </a>
-                    </div>
-                </div>
-            </nav>
-
-            {/* Main Content */}
-            <div className="flex flex-col items-center justify-center flex-grow">
-                <h1 className="text-3xl font-bold mb-4">Real-Time Emotion Detection</h1>
-                <video ref={videoRef} width="640" height="480" className="mb-4"></video>
-                <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
-                <div className="text-2xl font-semibold">Detected Emotion: {emotion}</div>
-            </div>
+  return (
+    <div className="Home">
+      <header className="bg-blue-900 text-white py-4">
+        <nav className="flex flex-col md:flex-row justify-between items-center px-8">
+          <div className="flex space-x-4">
+            <div className="text-lg">Text</div>
+            <div className="text-lg">Text</div>
+            <div className="text-lg">Text</div>
+          </div>
+          <button className="bg-white text-blue-900 py-2 px-4 rounded mt-4 md:mt-0">Login</button>
+        </nav>
+        <div className="text-center my-12 px-4 md:px-0">
+          <h1 className="text-3xl md:text-4xl font-bold">Understand Your Emotions</h1>
+          <h2 className="text-xl md:text-2xl mt-4">Take Control of Your Well-being.</h2>
+          <button
+            className="bg-blue-400 text-white mt-8 py-3 px-6 rounded"
+            onClick={handleScanClick}
+          >
+            Scan Yours
+          </button>
         </div>
-    );
-};
+      </header>
+      <main className="px-4 md:px-8 py-12">
+        <section className="bg-indigo-100 py-12 px-4 md:px-8 rounded-lg">
+          <h2 className="text-2xl md:text-3xl font-semibold">The Power of Emotions: Understanding and Managing Your Feelings</h2>
+          <p className="mt-4">Emotions are a powerful force in our lives. They can motivate us, inspire us, and connect us to others. But they can also be overwhelming and destructive if we don't understand and manage them effectively.</p>
+        </section>
+        <section className="flex flex-col md:flex-row justify-around py-12 space-y-8 md:space-y-0 md:space-x-4">
+          <div className="w-full md:w-1/3 text-left">
+            <h3 className="text-lg md:text-xl font-semibold">What are emotions?</h3>
+            <p className="mt-4">Emotions are complex states of feeling that are often accompanied by physiological changes, such as changes in heart rate, breathing, and facial expressions. They are influenced by a variety of factors, including our thoughts, experiences, and environment.</p>
+          </div>
+          <div className="w-full md:w-1/3 text-left">
+            <h3 className="text-lg md:text-xl font-semibold">Why are emotions important?</h3>
+            <ul className="mt-4 list-disc list-inside">
+              <li>Make decisions: Emotions can provide us with valuable information about our needs and desires.</li>
+              <li>Motivate us to take action: Emotions can give us the drive to pursue our goals.</li>
+              <li>Connect with others: Emotions can help us build relationships and form bonds with others.</li>
+              <li>Understand the world around us: Emotions can help us to interpret the behavior of others and make sense of our experiences.</li>
+            </ul>
+          </div>
+          <div className="w-full md:w-1/3 text-left">
+            <h3 className="text-lg md:text-xl font-semibold">How can we manage our emotions?</h3>
+            <ul className="mt-4 list-disc list-inside">
+              <li>Become aware of your emotions</li>
+              <li>Accept your emotions</li>
+              <li>Express your emotions in a healthy way</li>
+              <li>Learn from your emotions</li>
+            </ul>
+          </div>
+        </section>
+        <section className="flex flex-col md:flex-row justify-around py-12 space-y-4 md:space-y-0 md:space-x-4">
+          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">Sadness</div>
+          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">Sadness</div>
+          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">Sadness</div>
+        </section>
+        <section className="bg-green-100 py-12 px-4 md:px-8 rounded-lg text-center">
+          <h3 className="text-xl md:text-2xl font-semibold">Your Emotion</h3>
+          <div className="bg-green-300 mt-4 py-16 rounded-lg">Result:</div>
+        </section>
+      </main>
+      <footer className="bg-gray-800 text-white py-12">
+        <div className="flex flex-col md:flex-row justify-around">
+          <div>
+            <h4 className="font-semibold">Product</h4>
+            <ul className="mt-4 space-y-2">
+              <li>Pricing</li>
+              <li>Solutions</li>
+              <li>Education</li>
+              <li>Team plans</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold">About us</h4>
+            <ul className="mt-4 space-y-2">
+              <li>About</li>
+              <li>Branding</li>
+              <li>Newsroom</li>
+              <li>Partnerships</li>
+              <li>Affiliates</li>
+              <li>Careers</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold">Help and support</h4>
+            <ul className="mt-4 space-y-2">
+              <li>Help center</li>
+              <li>Contact us</li>
+              <li>Privacy & Terms</li>
+              <li>Safety information</li>
+              <li>Sitemap</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold">Community</h4>
+            <ul className="mt-4 space-y-2">
+              <li>Agencies</li>
+              <li>Freelancers</li>
+              <li>Engineers</li>
+            </ul>
+          </div>
+        </div>
+        <div className="flex justify-center mt-8 space-x-4">
+          <a href="#" className="text-white">App Store</a>
+          <a href="#" className="text-white">Google Play</a>
+        </div>
+        <div className="text-center mt-8">
+          <p>&copy; 2024 Help Privacy Terms</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
 
 export default Home;
