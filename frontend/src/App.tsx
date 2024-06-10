@@ -1,14 +1,13 @@
-// src/App.js
+// App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
-import Home from './components/Home';
 import Scan from './components/Scan';
 
-const App = () => {
-  return (
-    <Router>
+const App: React.FC = () => (
+	<Router>
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -17,7 +16,6 @@ const App = () => {
           <Route path="/" element={<Login />} /> {/* Default route */}
         </Routes>
     </Router>
-  );
-};
+);
 
 export default App;

@@ -1,42 +1,53 @@
+// Scan.tsx
 import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faInfoCircle, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
-const Scan = () => {
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [emotion, setEmotion] = useState('');
+const Scan: React.FC = () => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [emotion, setEmotion] = useState<string>('');
 
     useEffect(() => {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                videoRef.current.srcObject = stream;
-                videoRef.current.play();
-            })
-            .catch(err => {
+        const getMedia = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                    videoRef.current.play();
+                }
+            } catch (err) {
                 console.error("Error accessing the camera: ", err);
-            });
+            }
+        };
+        getMedia();
     }, []);
 
     const captureFrame = () => {
+        if (!canvasRef.current || !videoRef.current) return;
+
         const context = canvasRef.current.getContext('2d');
-        context.drawImage(videoRef.current, 0, 0, 640, 480);
-        canvasRef.current.toBlob(blob => {
-            const formData = new FormData();
-            formData.append('file', blob, 'frame.png');
-            axios.post('http://localhost:8000/predict/', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then(response => {
-                setEmotion(response.data.emotion);
-            })
-            .catch(error => {
-                console.error("Error predicting emotion: ", error);
+        if (context) {
+            context.drawImage(videoRef.current, 0, 0, 640, 480);
+            canvasRef.current.toBlob(blob => {
+                if (!blob) return;
+
+                const formData = new FormData();
+                formData.append('file', blob, 'frame.png');
+                axios.post('http://localhost:8000/predict/', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => {
+                    setEmotion(response.data.emotion);
+                })
+                .catch(error => {
+                    console.error("Error predicting emotion: ", error);
+                });
             });
-        });
+        }
     };
 
     useEffect(() => {
