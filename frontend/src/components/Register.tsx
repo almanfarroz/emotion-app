@@ -1,4 +1,3 @@
-// Register.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -8,12 +7,18 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Simpan data pengguna ke local storage (atau kirim ke server)
-    localStorage.setItem('user', JSON.stringify({ username, password }));
-    alert('Registration Successful');
-    navigate('/login');
+    try {
+      await axios.post('http://localhost:8000/register', {
+        username,
+        password
+      });
+      alert('Registration Successful');
+      navigate('/login');
+    } catch (error) {
+      alert('Registration failed');
+    }
   };
 
   return (

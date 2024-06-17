@@ -1,4 +1,3 @@
-// Login.tsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -8,13 +7,16 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-    if (storedUser && storedUser.username === username && storedUser.password === password) {
+    try {
+      const response = await axios.post('http://localhost:8000/login', {
+        username,
+        password,
+      });
       alert('Login Successful');
       navigate('/home');
-    } else {
+    } catch (error) {
       alert('Invalid username or password');
     }
   };
@@ -44,12 +46,18 @@ const Login: React.FC = () => {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             />
           </div>
-          <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-300"
+          >
             Login
           </button>
         </form>
         <p className="mt-4 text-gray-600">
-          Don't have an account? <Link to="/register" className="text-blue-500 hover:underline">Register</Link>
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-500 hover:underline">
+            Register
+          </Link>
         </p>
       </div>
     </div>
