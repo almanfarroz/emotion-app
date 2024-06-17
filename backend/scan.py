@@ -16,24 +16,8 @@ emotion_label_to_text = {
     6: 'neutral'
 }
 
-app = FastAPI()
-
-origins = [
-    "http://localhost",
-    "http://localhost:3000"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 model = load_model('model/model.h5')
 
-@app.post("/predict/")
 async def predict(file: UploadFile = File(...)):
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))

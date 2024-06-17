@@ -1,11 +1,14 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi import FastAPI, UploadFile, File
 import auth
 import models, schemas
 from database import SessionLocal, engine
 from access_token import create_access_token, decode_access_token
+
+# Import endpoint from scan.py
+from scan import predict
 
 models.Base.metadata.create_all(bind=engine)
 def get_db():
@@ -24,6 +27,10 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=["*"]
 )
+
+@app.post("/predict/")
+async def get_prediction(file: UploadFile = File(...)):
+    return await predict(file)
 
 @app.post('/register/', response_model=schemas.User) 
 async def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
