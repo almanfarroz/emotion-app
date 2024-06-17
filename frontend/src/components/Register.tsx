@@ -22,9 +22,13 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="bg-cover bg-center bg-no-repeat py-4 min-h-screen flex items-center justify-center"
+    style={{
+      backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
+      height: "100vh",
+    }} >
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-6">Register</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
             <label className="block text-gray-700">Username:</label>
@@ -46,7 +50,7 @@ const Register: React.FC = () => {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             />
           </div>
-          <button type="submit" className="w-full py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-700 transition duration-300">
+          <button type="submit" className="w-full py-2 px-4 bg-[#3C3956] text-white rounded-lg hover:bg-gray-600 transition duration-300">
             Register
           </button>
         </form>

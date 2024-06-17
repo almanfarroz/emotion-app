@@ -9,6 +9,7 @@ from access_token import create_access_token, decode_access_token
 
 # Import endpoint from scan.py
 from scan import predict
+# from qa import predict_qa, QAInput
 
 models.Base.metadata.create_all(bind=engine)
 def get_db():
@@ -27,6 +28,10 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=["*"]
 )
+# @app.post("/predict-qa/")
+# def predict_qa_endpoint(qa_input: QAInput):
+#     result = predict_qa(qa_input)  # Memanggil fungsi predict_qa dari qa.py dengan qa_input sebagai argumen
+#     return result
 
 @app.post("/predict/")
 async def get_prediction(file: UploadFile = File(...)):
