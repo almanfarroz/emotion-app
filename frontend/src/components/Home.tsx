@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Home() {
@@ -10,7 +9,13 @@ function Home() {
 
   return (
     <div className="Home">
-      <header className="bg-blue-900 text-white py-4">
+      <header
+        className="bg-cover bg-center bg-no-repeat py-4"
+        style={{
+          backgroundImage: `url(${process.env.PUBLIC_URL}/images/mountain-lake.jpg)`,
+          height: "100vh",
+        }} 
+      >
         <nav className="flex flex-col md:flex-row justify-between items-center px-8">
           <div className="flex space-x-4">
             <div className="text-lg">Text</div>
@@ -19,7 +24,7 @@ function Home() {
           </div>
           <button className="bg-white text-blue-900 py-2 px-4 rounded mt-4 md:mt-0">Login</button>
         </nav>
-        <div className="text-center my-12 px-4 md:px-0">
+        <div className="text-center my-12 px-4 md:px-0 py-96 ">
           <h1 className="text-3xl md:text-4xl font-bold">Understand Your Emotions</h1>
           <h2 className="text-xl md:text-2xl mt-4">Take Control of Your Well-being.</h2>
           <button
