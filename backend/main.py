@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Form
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
@@ -6,10 +6,10 @@ import auth
 import models, schemas
 from database import SessionLocal, engine
 from access_token import create_access_token, decode_access_token
-
-# Import endpoint from scan.py
 from scan import predict
-# from qa import predict_qa, QAInput
+from pydantic import BaseModel
+from qa import get_answers
+from typing import List, Dict, Any
 
 models.Base.metadata.create_all(bind=engine)
 def get_db():
@@ -28,10 +28,15 @@ app.add_middleware(
     allow_credentials=True,
     allow_origins=["*"]
 )
-# @app.post("/predict-qa/")
-# def predict_qa_endpoint(qa_input: QAInput):
-#     result = predict_qa(qa_input)  # Memanggil fungsi predict_qa dari qa.py dengan qa_input sebagai argumen
-#     return result
+
+class QAPayload(BaseModel):
+    context: str
+    question: str
+
+@app.post("/predict-qa")
+def predict(payload: QAPayload):
+    answers, probabilities = get_answers(payload.context, payload.question)
+    return {"answers": answers, "probabilities": probabilities}
 
 @app.post("/predict/")
 async def get_prediction(file: UploadFile = File(...)):

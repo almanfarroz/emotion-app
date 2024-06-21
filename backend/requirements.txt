@@ -8,3 +8,4 @@ pyjwt==2.7.0
 passlib[bcrypt]==1.7.4
 sqlalchemy==1.4.41
 pydantic==2.7.4
+torch

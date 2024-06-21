@@ -16,3 +16,10 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
+# class Prediction(BaseModel):
+#     id = int
+#     user_id = int
+#     photo = String
+#     prediction = String
+#     created_at = Optional[str]

@@ -6,6 +6,10 @@ function Home() {
   const handleScanClick = () => {
     navigate('/scan');
   };
+  
+  const handleQAClick = () => {
+    navigate('/qa');
+  };
 
   return (
     <div className="Home">
@@ -18,12 +22,11 @@ function Home() {
       >
         <nav className="flex flex-col md:flex-row justify-center items-center px-8">
           <div className="flex space-x-4">
-            <div className="text-lg">Text</div>
-            <div className="text-lg">Text</div>
-            <div className="text-lg">Text</div>
+            <div className="text-lg" onClick={handleScanClick}>Scan</div>
+            <div className="text-lg" onClick={handleQAClick}>QA</div>
           </div>
         </nav>
-        <div className="text-center my-12 px-4 md:px-0 py-96 ">
+        <div className="text-center my-12 px-4 md:px-0 py-48 ">
           <h1 className="text-3xl md:text-4xl font-bold">Understand Your Emotions</h1>
           <h2 className="text-xl md:text-2xl mt-4">Take Control of Your Well-being.</h2>
           <button

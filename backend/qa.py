@@ -1,16 +1,24 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from transformers import pipeline, QuestionAnsweringPipeline
+# qa.py
+from simpletransformers.question_answering import QuestionAnsweringModel
 
-# Load the model and tokenizer
-qa_pipeline: QuestionAnsweringPipeline = pipeline("question-answering", model="./model", tokenizer="./model")
+model_type = "bert"
+saved_model_dir = "qa"
 
-# API Input Schema
-class QAInput(BaseModel):
-    question: str
-    context: str
+# Load the model
+model = QuestionAnsweringModel(model_type, saved_model_dir, use_cuda=False)
 
-# API Route
-def predict_qa(qa_input: QAInput):
-    result = qa_pipeline(question=qa_input.question, context=qa_input.context)
-    return result
+def get_answers(context, question):
+    to_predict = [
+        {
+            "context": context,
+            "qas": [
+                {
+                    "question": question,
+                    "id": "1",
+                }
+            ],
+        }
+    ]
+
+    answers, probabilities = model.predict(to_predict)
+    return answers, probabilities

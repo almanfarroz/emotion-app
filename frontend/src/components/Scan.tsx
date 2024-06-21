@@ -56,7 +56,11 @@ const Scan: React.FC = () => {
     }, []);
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col h-screen bg-cover bg-center bg-no-repeat py-4 text-white"
+        style={{
+          backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
+          height: "100vh",
+        }} >
             {/* Main Content */}
             <div className="flex flex-col items-center justify-center flex-grow">
                 <h1 className="text-3xl font-bold mb-4">Real-Time Emotion Detection</h1>

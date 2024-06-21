@@ -5,6 +5,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import Scan from './components/Scan';
+import QA from './components/QA';
 
 const App: React.FC = () => (
 	<Router>
@@ -13,6 +14,7 @@ const App: React.FC = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/scan" element={<Scan />} />
+          <Route path="/qa" element={<QA />} />
           <Route path="/" element={<Login />} /> {/* Default route */}
         </Routes>
     </Router>
