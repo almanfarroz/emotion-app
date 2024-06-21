@@ -26,7 +26,7 @@ function Home() {
             <div className="text-lg" onClick={handleQAClick}>QA</div>
           </div>
         </nav>
-        <div className="text-center my-12 px-4 md:px-0 py-48 ">
+        <div className="flex flex-col items-center justify-center min-h-screen px-4 md:px-0">
           <h1 className="text-3xl md:text-4xl font-bold">Understand Your Emotions</h1>
           <h2 className="text-xl md:text-2xl mt-4">Take Control of Your Well-being.</h2>
           <button

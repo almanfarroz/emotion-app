@@ -34,7 +34,7 @@ class QAPayload(BaseModel):
     question: str
 
 @app.post("/predict-qa")
-def predict(payload: QAPayload):
+def predictqa(payload: QAPayload):
     answers, probabilities = get_answers(payload.context, payload.question)
     return {"answers": answers, "probabilities": probabilities}
 
