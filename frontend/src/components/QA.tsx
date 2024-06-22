@@ -11,15 +11,13 @@ const QA: React.FC = () => {
     try {
       const response = await axios.post('http://localhost:8000/predict-qa', { context, question });
       const { answers, probabilities } = response.data;
-  
-      // Menyimpan hanya nilai dari 'answer' dan 'probability'
-      setAnswers(answers.map((a: any) => a.answer));
-      setProbabilities(probabilities.map((p: any) => p.probability));
+
+      setAnswers([answers]);
+      setProbabilities([probabilities]);
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  
 
   return (
     <div className="flex flex-col bg-cover bg-center bg-no-repeat py-4 justify-center items-center h-screen"
