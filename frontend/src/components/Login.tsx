@@ -6,20 +6,25 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import ikon mata
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State untuk mengatur tipe input password
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/login', {
+      const response = await axios.post('http://localhost:8000/token', {
         username,
         password,
-      });
-      alert('Login Successful');
+      }, {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+      localStorage.setItem('token', response.data.access_token);
       navigate('/home');
     } catch (error) {
-      alert('Invalid username or password');
+      setError('Invalid username or password');
     }
   };
 
@@ -64,6 +69,7 @@ const Login: React.FC = () => {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+          {error && <p>{error}</p>}
           <button
             type="submit"
             className="w-full py-2 px-4 bg-[#3C3956] text-white rounded-lg hover:bg-gray-600 transition duration-300"

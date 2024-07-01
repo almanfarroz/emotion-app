@@ -1,8 +1,5 @@
-// Scan.tsx
 import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faInfoCircle, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 const Scan: React.FC = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -15,7 +12,6 @@ const Scan: React.FC = () => {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
-                    // Wait for the video metadata to load, then play the video
                     videoRef.current.onloadedmetadata = () => {
                         videoRef.current?.play();
                     };
@@ -26,6 +22,7 @@ const Scan: React.FC = () => {
         };
         getMedia();
     }, []);
+
     const captureFrame = () => {
         if (!canvasRef.current || !videoRef.current) return;
 
@@ -43,6 +40,7 @@ const Scan: React.FC = () => {
                     }
                 })
                 .then(response => {
+                    console.log("Prediction response:", response.data);
                     setEmotion(response.data.emotion);
                 })
                 .catch(error => {
@@ -59,21 +57,44 @@ const Scan: React.FC = () => {
 
     return (
         <div
-      className="flex flex-col h-screen bg-cover bg-center bg-no-repeat py-4 text-white"
-      style={{
-        backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
-        height: "100vh",
-      }}>
-      {/* Main Content */}
-      <div className="flex flex-col items-center justify-center flex-grow">
-      <div className="bg-[#726E94] rounded-lg p-4 shadow-lg">
-        <h1 className="bg-white text-black p-4 rounded-lg shadow-lg text-3xl font-bold mb-4 text-center">Real-Time Emotion Detection</h1>
-          <video ref={videoRef} width="640" height="480" className="mb-4 rounded-lg"></video>
-          <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
-          <div className="text-2xl font-semibold">Detected Emotion: {emotion}</div>
+            className="flex flex-col h-screen bg-cover bg-center bg-no-repeat py-4 text-white"
+            style={{
+                backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
+                height: "100vh",
+            }}>
+            <div className="flex flex-col items-center justify-center flex-grow">
+                <div className="bg-[#726E94] rounded-lg p-4 shadow-lg">
+                    <h1 className="bg-white text-black p-4 rounded-lg shadow-lg text-3xl font-bold mb-4 text-center">
+                        Real-Time Emotion Detection
+                    </h1>
+                    <div className="flex">
+                        <div>
+                            <video ref={videoRef} width="640" height="480" className="mb-4 rounded-lg"></video>
+                            <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
+                            <div className="text-2xl font-semibold">Detected Emotion: {emotion}</div>
+                            <div>
+                            <button
+                        className="mt-4 bg-[#3C3956] text-white px-4 py-2 rounded-lg shadow"
+                        onClick={() => {
+                            axios.post('http://localhost:8000/predictions/', { prediction: emotion })
+                                .then(response => {
+                                    console.log("Prediction saved:", response.data);
+                                })
+                                .catch(error => {
+                                    console.error("Error saving prediction:", error);
+                                });
+                        }}>
+                        Save Emotion
+                    </button>
+                            </div>
+                        </div>
+                        <div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
     );
 };
 
