@@ -2,16 +2,16 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
-import auth, access_token
+import auth
 import models, schemas, predictions
 from database import SessionLocal, engine
-from datetime import datetime, timedelta
-from access_token import create_access_token, decode_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_HOURS
+from datetime import timedelta
+from access_token import create_access_token, get_current_user, ACCESS_TOKEN_EXPIRE_HOURS
 from scan import predict
 from pydantic import BaseModel
 from qa import get_answers
-from typing import List, Dict, Any
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from typing import Dict
+from fastapi.security import OAuth2PasswordRequestForm
 import logging
 from sqlalchemy import func
 from fastapi.responses import StreamingResponse
@@ -36,6 +36,16 @@ app.add_middleware(
     allow_origins=["*"]
 )
 
+emotions_contexts = {
+    "angry": "Start by giving yourself enough quiet and time to remember about yourself what feels steady and consistent in your nature and interactions with others.Give yourself the freedom to your interest in having interests.  Are you motivated because of competing with others or because an activity itself feels satisfying?If you are able to develop a sense of defining yourself without fear of judging yourself, you will start coming close to knowing who you are.",
+    "happy": "Anger is not necessarily a bad thing. If you are angry and you can talk about your feelings, that would be very helpful. Anger usually comes along with something else, like feeling sad, worried, overwhelmed, confused, and many others. Consider looking at what you notice in addition to anger and you may have a different starting point. If you get along well with friends and don't get angry with them, look at the differences. Do you feel criticized by your parents or family? Misunderstood? There could be any number of things.I wonder if you start getting angry very slowly and it builds or if it happens quickly. Try to keep an eye on the patterns and see if you can stop and look at what else is going on as you start to get angry. Anger is a real emotion in itself. It almost always connects to something else as well.",
+    "sad": "Allow yourself to feel the sadness and understand its source. Talk to someone you trust about your feelings, and engage in self-care activities that help soothe and comfort you.",
+    # Add more emotions and contexts as needed
+}
+
+class ContextResponse(BaseModel):
+    emotions: Dict[str, str]
+
 class QAPayload(BaseModel):
     context: str
     question: str
@@ -48,6 +58,10 @@ class PredictionCreate(BaseModel):
 def predictqa(payload: QAPayload):
     answers, probabilities = get_answers(payload.context, payload.question)
     return {"answers": answers, "probabilities": probabilities}
+
+@app.get("/contexts", response_model=ContextResponse)
+def get_contexts():
+    return {"emotions": emotions_contexts}
 
 @app.post("/predict/")
 async def get_prediction(file: UploadFile = File(...)):

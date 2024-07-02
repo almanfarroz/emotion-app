@@ -53,6 +53,6 @@ async def predict(file: UploadFile = File(...)):
     if emotions:
         return {"emotion": emotions[0]}
     else:
-        return {"emotion": "muka anda tidak terdeteksi"}
+        return {"emotion": "Arahkan mukamu ke kamera"}
 
 

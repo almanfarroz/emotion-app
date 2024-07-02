@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Union, Optional
+from typing import Union
 
 class UserBase(BaseModel):
     username: str

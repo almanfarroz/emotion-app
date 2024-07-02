@@ -1,7 +1,5 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String
 from database import Base
-import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -12,5 +10,5 @@ class User(Base):
 class Prediction(Base):
     __tablename__ = "predictions"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     prediction = Column(String(255), index=True)  # Specify length for VARCHAR
