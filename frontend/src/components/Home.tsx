@@ -1,7 +1,34 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Home: React.FC = () => {
   const [chartUrl, setChartUrl] = useState<string>('');
+  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await axios.get('http://localhost:8000/users/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    setUsername(response.data.username);
+                } catch (error) {
+                    console.error("Error fetching user details", error);
+                    navigate('/');
+                }
+            } else {
+                navigate('/');
+            }
+        };
+
+        fetchUserDetails();
+    }, [navigate]);
 
   const handleScanClick = () => {
     window.location.href = '/scan';
@@ -46,6 +73,9 @@ const Home: React.FC = () => {
           </div>
           <div className="text-lg cursor-pointer" onClick={handleLogout}>
                 Logout
+            </div>
+            <div className="text-lg cursor-pointer">
+            {username}
             </div>
         </div>
       </nav>
@@ -154,15 +184,35 @@ const Home: React.FC = () => {
 
         <section className="flex flex-col md:flex-row justify-around space-y-4 md:space-y-0 md:space-x-4">
           <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            Sadness
+            <p><strong>Angry</strong></p>
+            <p>This emotion involves strong feelings of anger or dissatisfaction towards something or someone.</p>
           </div>
           <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            Sadness
+            <p><strong>Disgusted</strong></p>
+            <p>This emotion involves feelings of dislike or revulsion towards something perceived as disgusting or unpleasant.</p>
           </div>
           <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            Sadness
+            <p><strong>Fearful</strong></p>
+            <p>This emotion arises when someone feels afraid or anxious about something potentially dangerous or frightening.</p>
+          </div>
+          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
+            <p><strong>Happy</strong></p>
+            <p>A positive emotion that occurs when someone feels joyful, pleased, or satisfied with a situation or event.</p>
+          </div>
+          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
+            <p><strong>Neutral</strong></p>
+            <p>This emotion reflects calmness or impartiality towards a specific situation or event, without strong positive or negative feelings.</p>
+          </div>
+          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
+            <p><strong>Sad</strong></p>
+            <p>This emotion occurs when someone feels sorrowful, disappointed, or downcast due to disappointing or saddening events.</p>
+          </div>
+          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
+            <p><strong>Surprised</strong></p>
+            <p>This emotion occurs when someone feels astonished or shocked by unexpected or surprising events.</p>
           </div>
         </section>
+
       </main>
 
       <footer className="bg-white text-black py-12 bg-[#3C3956]">

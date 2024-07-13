@@ -1,7 +1,7 @@
 # qa.py
 from simpletransformers.question_answering import QuestionAnsweringModel
 
-model_type = "bert"
+model_type = "roberta"
 saved_model_dir = "qa"
 
 # Load the model
