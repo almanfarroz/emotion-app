@@ -1,3 +1,4 @@
+# schemas.py
 from pydantic import BaseModel
 from typing import Union
 
@@ -20,19 +21,12 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Union[str, None] = None
 
-# Schema for PredictionCreate
 class PredictionCreate(BaseModel):
     prediction: str
-# Schema for Prediction (response model)
+    user_id: int  # Add user_id here
+
 class Prediction(PredictionCreate):
     id: int
 
     class Config:
         from_attributes = True
-
-# class Prediction(BaseModel):
-#     id = int
-#     user_id = int
-#     photo = String
-#     prediction = String
-#     created_at = Optional[str]

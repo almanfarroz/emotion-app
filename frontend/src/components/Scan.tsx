@@ -13,12 +13,13 @@ const emotionMessages: { [key: string]: string } = {
 };
 
 const Scan: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [emotion, setEmotion] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
-  const [username, setUsername] = useState('');
-  const navigate = useNavigate();
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [emotion, setEmotion] = useState<string>('');
+    const [message, setMessage] = useState<string>('');
+    const [username, setUsername] = useState('');
+    const [userId, setUserId] = useState<number | null>(null); // Add state for user ID
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserDetails = async () => {
@@ -31,6 +32,7 @@ const Scan: React.FC = () => {
                         }
                     });
                     setUsername(response.data.username);
+                    setUserId(response.data.id); // Set user ID
                 } catch (error) {
                     console.error("Error fetching user details", error);
                     navigate('/');
@@ -111,51 +113,53 @@ const Scan: React.FC = () => {
     };
 
     const handleSaveEmotion = () => {
-        // Check if emotion is one of the predefined emotions
-        if (emotion && emotion in emotionMessages) {
-            axios.post('http://localhost:8000/predictions/', { prediction: emotion })
-                .then(response => {
-                    console.log("Prediction saved:", response.data);
-                    alert('Terimakasih telah berkontribusi untuk penambahan data statistik');
-                })
-                .catch(error => {
-                    console.error("Error saving prediction:", error);
-                });
+        if (emotion && emotion in emotionMessages && userId) {
+            const token = localStorage.getItem('token');
+            axios.post('http://localhost:8000/predictions/', { prediction: emotion, user_id: userId }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                console.log("Prediction saved:", response.data);
+                alert('Thank you for contributing to the addition of statistical data.');
+            })
+            .catch(error => {
+                console.error("Error saving prediction:", error);
+            });
         } else {
             alert('Turn your face towards the camera');
         }
     };
 
     return (
-      <div
-  className="flex flex-col min-h-screen bg-cover bg-center bg-no-repeat text-white"
-  style={{
-    backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
-    backgroundAttachment: "fixed",
-  }}
->
-  {/* Navbar */}
-  <nav className="flex flex-col md:flex-row justify-center items-center px-4 md:px-8 w-full text-white py-4 absolute top-0">
-    <div className="flex space-x-4">
-      <div className="text-lg cursor-pointer" onClick={handleHomeClick}>
-        Home
-      </div>
-      <div className="text-lg cursor-pointer" onClick={handleScanClick}>
-        Scan
-      </div>
-      <div className="text-lg cursor-pointer" onClick={handleQAClick}>
-        QA
-      </div>
-      <div className="text-lg cursor-pointer" onClick={handleLogout}>
-        Logout
-      </div>
-      <div className="text-lg cursor-pointer">
+        <div
+            className="flex flex-col min-h-screen bg-cover bg-center bg-no-repeat text-white"
+            style={{
+                backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
+                backgroundAttachment: "fixed",
+            }}
+        >
+            <nav className="flex flex-col md:flex-row justify-center items-center px-8 w-full text-white py-4 absolute top-0">
+        <div className="flex space-x-4">
+          <div className="text-lg cursor-pointer" onClick={handleHomeClick}>
+            Home
+          </div>
+          <div className="text-lg cursor-pointer" onClick={handleScanClick}>
+            Scan
+          </div>
+          <div className="text-lg cursor-pointer" onClick={handleQAClick}>
+            QA
+          </div>
+          <div className="text-lg cursor-pointer" onClick={handleLogout}>
+                Logout
+            </div>
+            <div className="text-lg cursor-pointer">
             {username}
             </div>
-    </div>
-  </nav>
-
-  <div className="flex flex-col items-center justify-center flex-grow px-4 mt-16 md:mt-24">
+        </div>
+      </nav>
+            <div className="flex flex-col items-center justify-center flex-grow px-4 mt-16 md:mt-24">
     <div className="bg-[#726E94] rounded-lg p-6 md:p-8 shadow-lg w-full max-w-2xl">
       <h1 className="bg-white text-black p-4 rounded-lg shadow-lg text-3xl font-bold mb-4 text-center">
         Real-Time Emotion Detection
@@ -166,14 +170,11 @@ const Scan: React.FC = () => {
           <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
           <div className="text-2xl font-semibold">Detected Emotion: {emotion}</div>
           <div className="text-xl font-semibold">{message}</div>
-          <div>
-            <button
-              className="mt-4 bg-[#3C3956] text-white px-4 py-2 rounded-lg shadow"
-              onClick={handleSaveEmotion}
-            >
-              Save Emotion
-            </button>
-          </div>
+          <div className="mt-4">
+        <p className="text-blue-300 cursor-pointer underline" onClick={handleSaveEmotion}>
+            Click here if you want to contribute to adding statistical data
+        </p>
+        </div>
         </div>
         <div>
         </div>

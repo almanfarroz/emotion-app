@@ -96,7 +96,7 @@ def read_users_me(current_user: schemas.User = Depends(get_current_user)):
     return current_user
 
 @app.post("/predictions/", response_model=schemas.Prediction)
-def create_prediction(prediction: schemas.PredictionCreate, db: Session = Depends(get_db)):
+def create_prediction(prediction: schemas.PredictionCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
     db_prediction = predictions.create_prediction(db=db, prediction=prediction)
     return db_prediction
 
