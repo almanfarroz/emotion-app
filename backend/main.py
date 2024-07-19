@@ -18,6 +18,7 @@ from fastapi.responses import StreamingResponse
 import matplotlib.pyplot as plt
 import seaborn as sns
 import io
+
 models.Base.metadata.create_all(bind=engine)
 def get_db():
     db = SessionLocal()
@@ -100,25 +101,37 @@ def create_prediction(prediction: schemas.PredictionCreate, db: Session = Depend
     db_prediction = predictions.create_prediction(db=db, prediction=prediction)
     return db_prediction
 
+# Endpoint untuk membuat grafik distribusi emosi
 @app.get("/emotion_chart/")
 def get_emotion_chart(db: Session = Depends(get_db)):
+    # Query untuk mengambil distribusi emosi dari semua prediksi
     stats = db.query(models.Prediction.prediction, func.count(models.Prediction.prediction)).group_by(models.Prediction.prediction).all()
+    
+    # Jika tidak ada data yang ditemukan, tanggapi dengan HTTP 404
+    if not stats:
+        raise HTTPException(status_code=404, detail="No data found")
+    
+    # Ekstrak label dan ukuran dari hasil kueri
     labels = [item[0] for item in stats]
     sizes = [item[1] for item in stats]
-    total = sum(sizes)  # Calculate total
     
-    # Add total to labels
-    labels.append(f'Total: {total}')
-    sizes.append(total)
+    # Menghitung total dari semua emosi
+    total = sum(sizes)
     
+    # Plot pie chart
     plt.figure(figsize=(8, 8))
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=sns.color_palette("hsv", len(labels)))
-    plt.axis('equal')
+    plt.axis('equal')  # Memastikan lingkaran terlihat seperti lingkaran
     plt.title('Emotion Distribution (All Users)')
-
+    
+    # Menambahkan informasi total responden di sekitar pie chart
+    plt.text(-1.25, -1.25, f'Total: {total}', fontsize=12)
+    
+    # Menyimpan plot ke dalam buffer
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
     plt.close()
-
+    
+    # Mengembalikan gambar sebagai respons streaming
     return StreamingResponse(buf, media_type="image/png")
