@@ -12,7 +12,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 
 # Function to convert label to emotion text
 def label_to_text(label):
-    emotion_label_to_text = {0: 'angry', 1: 'disgusted', 2: 'fearful', 3: 'happy', 4: 'neutral', 5: 'sad', 6: 'surprised'}
+    emotion_label_to_text = {0: 'Angry', 1: 'Disgust', 2: 'Fear', 3: 'Happy', 4: 'Neutral', 5: 'Sad', 6: 'Surprise'}
     return emotion_label_to_text[label]
 
 async def predict(file: UploadFile = File(...)):
