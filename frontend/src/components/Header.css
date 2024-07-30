@@ -1,0 +1,255 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #c6ae9e;
+  background-image: 
+    repeating-linear-gradient(
+      to right, transparent 0 100px,
+      #d1d4e822 100px 101px
+    ),
+    repeating-linear-gradient(
+      to bottom, transparent 0 100px,
+      #25283b22 100px 101px
+    );
+}
+
+body::before {
+  position: absolute;
+  width: min(1400px, 90vw);
+  top: 10%;
+  left: 50%;
+  height: 90%;
+  transform: translateX(-50%);
+  content: '';
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: top center;
+  pointer-events: none;
+}
+
+.banner {
+  width: 100%;
+  height: 100vh;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.banner .slider {
+  position: absolute;
+  width: var(--item-width);
+  height: var(--item-height);
+  top: 10%;
+  left: calc(50% - (var(--item-width) / 2));
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  animation: autoRun 30s linear infinite;
+  z-index: 2;
+}
+
+@keyframes autoRun {
+  from {
+    transform: perspective(1200px) rotateX(-12deg) rotateY(0deg);
+  } 
+  to {
+    transform: perspective(1200px) rotateX(-16deg) rotateY(360deg);
+  }
+}
+
+.banner .slider .item {
+  position: absolute;
+  inset: 0 0 0 0;
+  transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+    translateZ(calc(var(--item-width) * 2.5));
+}
+
+.banner .slider .item img {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.banner .btn {
+  position: absolute;
+  font-family: Poppins;
+  font-weight: 500;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e3bf82;
+  color: #564528;
+  padding: 15px 30px;
+  font-size: 1.7em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color 0.3s, transform 0.3s;
+  box-shadow: 0px 4px 20px rgba(35, 16, 7, 0.5);
+}
+
+.banner .btn:hover {
+  background-color: #c02942;
+  color: #fff;
+  transform: translateX(-50%) scale(1.05);
+}
+
+.banner .btn:active {
+  background-color: #811426;
+  transform: translateX(-50%) scale(0.95);
+}
+
+.banner .content {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1400px, 100vw);
+  height: max-content;
+  padding-bottom: 100px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1;
+}
+
+.banner .content h1 {
+  font-family: 'ICA Rubrik';
+  font-weight: 700;
+  font-size: 10em;
+  line-height: 1em;
+  color: #47331b;
+  position: relative;
+}
+
+.banner .content h1::after {
+  position: absolute;
+  inset: 0 0 0 0;
+  content: attr(data-content);
+  z-index: 2;
+  -webkit-text-stroke: 2px #d2d2d2;
+  color: transparent;
+}
+
+.banner .content .tagline {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  color: white;
+  opacity: 0;
+  z-index: 3;
+}
+
+.banner .content .tagline h2 {
+  position: relative;
+  text-align: center;
+  width: 100%;
+}
+
+.banner .content .author {
+  font-family: Poppins;
+  opacity: 0;
+  text-align: right;
+  font-size: 1em;
+  color: #47331b;
+  -webkit-text-stroke: .5px white;
+  font-weight: 700;
+}
+
+.banner .content .author p {
+  -webkit-text-stroke: 0px transparent;
+}
+
+.banner .content .author .team {
+  font-weight: 400;
+}
+
+.banner .content h2 {
+  font-size: 3em;
+}
+
+.banner .content .model {
+  background-image: url('/public/images/model.png');
+  width: 100%;
+  height: 75vh;
+  position: absolute;
+  left: 0;
+  transform: scale(1.4);
+  background-size: auto 130%;
+  background-repeat: no-repeat;
+  background-position: top center;
+  z-index: 1;
+  transition: transform 0.5s ease, background-image 0.5s ease;
+}
+
+@media screen and (max-width: 1023px) {
+  .banner .btn {
+    padding: 12px 24px;
+    font-size: 1em;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .banner .btn {
+    padding: 10px 20px;
+    font-size: 0.9em;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .banner .slider {
+    width: var(--item-width);
+    height: var(--item-height);
+    left: calc(50% - (var(--item-width) / 2));
+  }
+
+  .banner .slider .item {
+    transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+      translateZ(calc(var(--item-width) * 2));
+  }
+
+  .banner .content h1 {
+    text-align: center;
+    width: 100%;
+    text-shadow: 0 10px 20px #000;
+    font-size: 7em;
+  }
+
+  .banner .content .author {
+    color: #fff;
+    padding: 20px;
+    text-shadow: 0 10px 20px #000;
+    z-index: 2;
+    max-width: unset;
+    width: 100%;
+    text-align: center;
+    padding: 0 30px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .banner .slider {
+    width: var(--item-width);
+    height: var(--item-height);
+    left: calc(50% - (var(--item-width) / 2));
+  }
+
+  .banner .slider .item {
+    transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+      translateZ(calc(var(--item-width) * 1.8));
+  }
+
+  .banner .content h1 {
+    font-size: 5em;
+  }
+}

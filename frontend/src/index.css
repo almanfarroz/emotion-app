@@ -12,6 +12,32 @@ code {
     monospace;
 }
 
+.bg-brown-600 {
+  background-color: #593a18;
+}
+
+.blurred-element {
+  filter: blur(5px); /* Adjust the blur radius as desired */
+}
+
+.blurred-none {
+  filter: blur(0px); /* Adjust the blur radius as desired */
+}
+
+.section-bg{
+  background: linear-gradient(
+    45deg, #eed6f5, #d3e6f3
+  )
+}
+
+.section-bg1{
+  background-color: #fff;
+}
+
+.logo{
+  filter: invert(100%);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

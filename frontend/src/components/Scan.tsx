@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
 
 const emotionMessages: { [key: string]: string } = {
     'Angry': 'Take a deep breath, anger is not good for health',
@@ -141,91 +142,81 @@ const Scan: React.FC = () => {
     };
 
     return (
-        <div
-            className="flex flex-col min-h-screen bg-cover bg-center bg-no-repeat text-white"
-            style={{
-                backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
-                backgroundAttachment: "fixed",
-            }}
-        >
-            <nav className="flex flex-col md:flex-row justify-center items-center px-8 w-full text-white py-4 absolute top-0">
-                <div className="flex space-x-4">
-                    <div className="text-lg cursor-pointer" onClick={handleHomeClick}>
-                        Home
-                    </div>
-                    <div className="text-lg cursor-pointer" onClick={handleScanClick}>
-                        Scan
-                    </div>
-                    <div className="text-lg cursor-pointer" onClick={handleQAClick}>
-                        QA
-                    </div>
-                    <div className="text-lg cursor-pointer" onClick={handleLogout}>
-                        Logout
-                    </div>
-                    <div className="text-lg cursor-pointer">
-                        {username}
-                    </div>
-                </div>
-            </nav>
-            <div className="flex flex-col items-center justify-center flex-grow px-4 mt-16 md:mt-24">
-                <div className="bg-[#726E94] rounded-lg p-6 md:p-8 shadow-lg w-full max-w-2xl">
-                    <h1 className="bg-white text-black p-4 rounded-lg shadow-lg text-3xl font-bold mb-4 text-center">
-                        Real-Time Emotion Detection
-                    </h1>
-                    <div className="flex flex-col items-center">
-                        <div>
-                            <video ref={videoRef} width="640" height="480" className="mb-4 rounded-lg"></video>
-                            <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
-                            {emotion && (
-                                <div className="text-2xl font-semibold">Detected Emotion: {emotion}</div>
-                            )}
-                            {message && (
-                                <div className="text-xl font-semibold">{message}</div>
-                            )}
-                            <div className="flex justify-center mt-8">
-                                <button
-                                    className="bg-[#3C3956] text-white px-4 py-2 rounded-lg font-semibold text-lg hover:bg-gray-700 mr-4"
-                                    onClick={handleSaveEmotion}
-                                >
-                                    Save Emotion
-                                </button>
-                                <button
-                                    className="bg-[#3C3956] text-white px-4 py-2 rounded-lg font-semibold text-lg hover:bg-gray-700"
-                                    onClick={() => {
-                                        setEmotion('');
-                                        setMessage('');
-                                        setRecommendedSongs([]);
-                                    }}
-                                >
-                                    Reset Emotion
-                                </button>
-                            </div>
-                            {recommendedSongs.length > 0 && (
-                                <div className="mt-8">
-                                    <h2 className="text-2xl font-bold mb-4">Recommended Songs for {lastSelectedEmotion} Emotion</h2>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {recommendedSongs.map((song, index) => (
-                                            <a
-                                                href={song.link_url}
-                                                key={index}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="block bg-gray-800 p-4 rounded-lg shadow-lg text-center"
-                                            >
-                                                <h3 className="text-lg font-bold mb-2">{song.name}</h3>
-                                                <p className="text-md mb-1">{song.artist}</p>
-                                                <p className="text-sm mb-1">{song.album}</p>
-                                                <p className="text-sm mb-1">{song.release_date}</p>
-                                                {song.cover_url && (
-                                                    <img src={song.cover_url} alt={song.name} className="w-full h-auto mt-2 rounded-lg" />
-                                                )}
-                                            </a>
-                                        ))}
-                                    </div>
+        <div className="relative flex flex-col min-h-screen text-white">
+            <div
+                className="absolute inset-0 bg-cover bg-no-repeat filter blur-sm"
+                style={{
+                    backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg-scan.png)`,
+                    backgroundAttachment: "fixed"
+                }}
+            ></div>
+            <div className="relative flex flex-col min-h-screen">
+                <Navbar 
+                    handleScanClick={handleScanClick}
+                    handleQAClick={handleQAClick}
+                    handleHomeClick={handleHomeClick}
+                    handleLogout={handleLogout}
+                />
+                <div className="flex flex-col items-center justify-center flex-grow px-4 mt-16 md:mt-24">
+                    <div className="bg-[#fff] rounded-lg p-6 md:p-8 shadow-lg w-full max-w-2xl">
+                        <h1 className="bg-white text-black p-4 rounded-lg text-3xl font-bold mb-4 text-center">
+                            Real-Time Emotion Detection
+                        </h1>
+                        <div className="flex flex-col items-center">
+                            <div>
+                                <video ref={videoRef} width="640" height="480" className="mb-4 rounded-lg"></video>
+                                <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
+                                {emotion && (
+                                    <div className="text-2xl font-semibold text-black">Detected Emotion: {emotion}</div>
+                                )}
+                                {message && (
+                                    <div className="text-xl font-semibold text-black">{message}</div>
+                                )}
+                                <div className="flex justify-center mt-8">
+                                    <button
+                                        className="bg-[#3C3956] text-white px-4 py-2 rounded-lg font-semibold text-lg hover:bg-gray-700 mr-4"
+                                        onClick={handleSaveEmotion}
+                                    >
+                                        Save Emotion
+                                    </button>
+                                    <button
+                                        className="bg-[#3C3956] text-white px-4 py-2 rounded-lg font-semibold text-lg hover:bg-gray-700"
+                                        onClick={() => {
+                                            setEmotion('');
+                                            setMessage('');
+                                            setRecommendedSongs([]);
+                                        }}
+                                    >
+                                        Reset Emotion
+                                    </button>
                                 </div>
-                            )}
+                                {recommendedSongs.length > 0 && (
+                                    <div className="mt-8">
+                                        <h2 className="text-2xl font-bold mb-4 text-[#3C3956]">Recommended Songs for {lastSelectedEmotion} Emotion</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {recommendedSongs.map((song, index) => (
+                                                <a
+                                                    href={song.link_url}
+                                                    key={index}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="block bg-[#fff5] border-black border-opacity-30 border-2 p-4 rounded-lg text-center"
+                                                >
+                                                    <h3 className="text-lg font-bold mb-2 text-[#3C3956]">{song.name}</h3>
+                                                    <p className="text-md mb-1 text-[#3C3956]">{song.artist}</p>
+                                                    <p className="text-sm mb-1 text-[#3C3956]">{song.album}</p>
+                                                    <p className="text-sm mb-1 text-[#3C3956]">{song.release_date}</p>
+                                                    {song.cover_url && (
+                                                        <img src={song.cover_url} alt={song.name} className="w-full h-auto mt-2 rounded-lg" />
+                                                    )}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </div><br />
                 </div>
             </div>
         </div>

@@ -16,11 +16,11 @@ import logging
 from sqlalchemy import func
 from fastapi.responses import StreamingResponse
 import matplotlib.pyplot as plt
-import seaborn as sns
 import io
 import os
 from recommendation import RecommendationRequest, get_recommendations, fetch_spotify_cover
 from context import fixed_context
+
 models.Base.metadata.create_all(bind=engine)
 def get_db():
     db = SessionLocal()
@@ -101,40 +101,48 @@ def create_prediction(prediction: schemas.PredictionCreate, db: Session = Depend
     db_prediction = predictions.create_prediction(db=db, prediction=prediction)
     return db_prediction
 
-# Endpoint untuk membuat grafik distribusi emosi
 @app.get("/emotion_chart/")
 def get_emotion_chart(db: Session = Depends(get_db)):
-    # Query untuk mengambil distribusi emosi dari semua prediksi
+    # Query to get emotion distribution from all predictions
     stats = db.query(models.Prediction.prediction, func.count(models.Prediction.prediction)).group_by(models.Prediction.prediction).all()
     
-    # Jika tidak ada data yang ditemukan, tanggapi dengan HTTP 404
+    # If no data found, respond with HTTP 404
     if not stats:
         raise HTTPException(status_code=404, detail="No data found")
     
-    # Ekstrak label dan ukuran dari hasil kueri
+    # Extract labels and sizes from the query results
     labels = [item[0] for item in stats]
     sizes = [item[1] for item in stats]
     
-    # Menghitung total dari semua emosi
+    # Calculate the total of all emotions
     total = sum(sizes)
+    
+    # Define custom colors
+    custom_colors = ['#3d2924', '#583a31', '#8b5343', '#a0715c', '#6c1a18', '#c63733', '#cb4440']
     
     # Plot pie chart
     plt.figure(figsize=(8, 8))
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=sns.color_palette("hsv", len(labels)))
-    plt.axis('equal')  # Memastikan lingkaran terlihat seperti lingkaran
+    wedges, texts, autotexts = plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=custom_colors[:len(labels)])
+    
+    # Customize the colors of the percentage text
+    for autotext in autotexts:
+        autotext.set_color('white')
+    
+    plt.axis('equal')  # Ensure the pie chart is circular
     plt.title('Emotion Distribution (All Users)')
     
-    # Menambahkan informasi total responden di sekitar pie chart
+    # Add total respondents info around the pie chart
     plt.text(-1.25, -1.25, f'Total: {total}', fontsize=12)
     
-    # Menyimpan plot ke dalam buffer
+    # Save plot to buffer
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
     plt.close()
     
-    # Mengembalikan gambar sebagai respons streaming
+    # Return image as streaming response
     return StreamingResponse(buf, media_type="image/png")
+
 
 @app.post("/recommend")
 def recommend_songs(request: RecommendationRequest):

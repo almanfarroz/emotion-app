@@ -1,34 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Header from './Header';
+import Navbar from './Navbar';
 
 const Home: React.FC = () => {
   const [chartUrl, setChartUrl] = useState<string>('');
   const [username, setUsername] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
   const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchUserDetails = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const response = await axios.get('http://localhost:8000/users/me', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    setUsername(response.data.username);
-                } catch (error) {
-                    console.error("Error fetching user details", error);
-                    navigate('/');
-                }
-            } else {
-                navigate('/');
+  // Uncomment and use this useEffect to fetch user details if needed
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('http://localhost:8000/users/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`
             }
-        };
+          });
+          setUsername(response.data.username);
+        } catch (error) {
+          console.error("Error fetching user details", error);
+          navigate('/');
+        }
+      } else {
+        navigate('/');
+      }
+    };
 
-        fetchUserDetails();
-    }, [navigate]);
+    fetchUserDetails();
+  }, [navigate]);
 
   const handleScanClick = () => {
     window.location.href = '/scan';
@@ -45,58 +50,53 @@ const Home: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
-};
+  };
+
   useEffect(() => {
-    // Fetch the emotion chart image
     setChartUrl('http://localhost:8000/emotion_chart/');
   }, []);
 
+  const openModal = (emotion: string) => {
+    setSelectedEmotion(emotion);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedEmotion(null);
+  };
+
+  // Modal overlay click handler
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
+
+  const emotionData: { [key: string]: { img: string, description: string } } = {
+    Angry: { img: 'images/angry_face.jpg', description: 'This emotion involves strong feelings of anger or dissatisfaction towards something or someone.' },
+    Disgusted: { img: 'images/disgusted_face.jpg', description: 'This emotion involves feelings of dislike or revulsion towards something perceived as disgusting or unpleasant.' },
+    Fearful: { img: 'images/fearful_face.jpg', description: 'This emotion arises when someone feels afraid or anxious about something potentially dangerous or frightening.' },
+    Happy: { img: 'images/happy_face.jpg', description: 'A positive emotion that occurs when someone feels joyful, pleased, or satisfied with a situation or event.' },
+    Neutral: { img: 'images/neutral_face.jpg', description: 'This emotion reflects calmness or impartiality towards a specific situation or event, without strong positive or negative feelings.' },
+    Sad: { img: 'images/sad_face.jpg', description: 'This emotion occurs when someone feels sorrowful, disappointed, or downcast due to disappointing or saddening events.' },
+    Surprised: { img: 'images/surprised_face.jpg', description: 'This emotion occurs when someone feels astonished or shocked by unexpected or surprising events.' },
+  };
+
   return (
     <div className="Home">
-      <header
-        className="bg-cover bg-center bg-no-repeat py-4 text-white"
-        style={{
-          backgroundImage: `url(${process.env.PUBLIC_URL}/images/bg.jpeg)`,
-          minHeight: '100vh',
-        }}
-      >
-        <nav className="flex flex-col md:flex-row justify-center items-center px-8 w-full text-white py-4 absolute top-0">
-        <div className="flex space-x-4">
-          <div className="text-lg cursor-pointer" onClick={handleHomeClick}>
-            Home
-          </div>
-          <div className="text-lg cursor-pointer" onClick={handleScanClick}>
-            Scan
-          </div>
-          <div className="text-lg cursor-pointer" onClick={handleQAClick}>
-            QA
-          </div>
-          <div className="text-lg cursor-pointer" onClick={handleLogout}>
-                Logout
-            </div>
-            <div className="text-lg cursor-pointer">
-            {username}
-            </div>
-        </div>
-      </nav>
-        <div className="flex flex-col items-center justify-center min-h-screen px-4 md:px-0">
-          <h1 className="text-3xl md:text-4xl font-bold text-center">
-            Understand Your Emotions
-          </h1>
-          <h2 className="text-xl md:text-2xl mt-4 text-center">
-            Take Control of Your Well-being.
-          </h2>
-          <button
-            className="bg-[#3C3956] text-white mt-8 py-3 px-6 rounded"
-            onClick={handleScanClick}
-          >
-            Scan Yours
-          </button>
-        </div>
-      </header>
-
-      <main className="px-4 md:px-8 py-12 bg-[#3C3956] text-white">
-        <section className="bg-indigo-200 py-12 px-4 md:px-8 rounded-lg text-black md:flex md:items-center md:space-x-8">
+      <Navbar 
+        handleScanClick={handleScanClick}
+        handleQAClick={handleQAClick}
+        handleHomeClick={handleHomeClick}
+        handleLogout={handleLogout}
+      />
+      <Header 
+        handleScanClick={handleScanClick}
+      />
+      
+      <main className="section-bg1 px-4 md:px-8 py-12 text-white">
+        <section className="bg-[#fff5] py-12 px-4 md:px-8 rounded-lg text-black md:flex md:items-center md:space-x-8">
           <div className="md:w-1/3 flex justify-center items-center mb-4 md:mb-0">
             <div
               style={{
@@ -104,7 +104,6 @@ const Home: React.FC = () => {
                 maxHeight: '450px',
                 width: '100%',
                 height: '100%',
-                border: '1px solid #ccc',
               }}
             >
               {chartUrl ? (
@@ -112,7 +111,7 @@ const Home: React.FC = () => {
                   src={chartUrl}
                   alt="Emotion Chart"
                   className="rounded-lg"
-                  style={{ maxWidth: '100%', maxHeight: '100%' }}
+                  style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: '12px', objectFit: 'cover' }}
                 />
               ) : (
                 <p>Loading chart...</p>
@@ -133,8 +132,8 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className="flex flex-col md:flex-row justify-around space-y-8 md:space-y-0 md:space-x-4 mb-8 py-12">
-          <div className="w-full md:w-1/3 text-left">
+        <section className="bg-[#fff5] py-12 px-4 md:px-8 rounded-lg text-black mt-8 md:flex md:items-center md:space-x-8">
+          <div className="md:w-1/3 text-left mb-4 md:mb-0">
             <h3 className="text-lg md:text-xl font-semibold">
               What are emotions?
             </h3>
@@ -146,7 +145,7 @@ const Home: React.FC = () => {
               environment.
             </p>
           </div>
-          <div className="w-full md:w-1/3 text-left">
+          <div className="md:w-1/3 text-left mb-4 md:mb-0">
             <h3 className="text-lg md:text-xl font-semibold">
               Why are emotions important?
             </h3>
@@ -169,7 +168,7 @@ const Home: React.FC = () => {
               </li>
             </ul>
           </div>
-          <div className="w-full md:w-1/3 text-left">
+          <div className="md:w-1/3 text-left">
             <h3 className="text-lg md:text-xl font-semibold">
               How can we manage our emotions?
             </h3>
@@ -182,90 +181,85 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className="flex flex-col md:flex-row justify-around space-y-4 md:space-y-0 md:space-x-4">
-          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            <p><strong>Angry</strong></p>
-            <p>This emotion involves strong feelings of anger or dissatisfaction towards something or someone.</p>
-          </div>
-          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            <p><strong>Disgusted</strong></p>
-            <p>This emotion involves feelings of dislike or revulsion towards something perceived as disgusting or unpleasant.</p>
-          </div>
-          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            <p><strong>Fearful</strong></p>
-            <p>This emotion arises when someone feels afraid or anxious about something potentially dangerous or frightening.</p>
-          </div>
-          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            <p><strong>Happy</strong></p>
-            <p>A positive emotion that occurs when someone feels joyful, pleased, or satisfied with a situation or event.</p>
-          </div>
-          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            <p><strong>Neutral</strong></p>
-            <p>This emotion reflects calmness or impartiality towards a specific situation or event, without strong positive or negative feelings.</p>
-          </div>
-          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            <p><strong>Sad</strong></p>
-            <p>This emotion occurs when someone feels sorrowful, disappointed, or downcast due to disappointing or saddening events.</p>
-          </div>
-          <div className="bg-purple-300 py-8 px-4 w-full md:w-1/3 rounded-lg">
-            <p><strong>Surprised</strong></p>
-            <p>This emotion occurs when someone feels astonished or shocked by unexpected or surprising events.</p>
-          </div>
+        <section className="bg-[#fff5] py-12 px-4 md:px-8 rounded-lg text-black mt-8 flex flex-col md:flex-row justify-around space-y-4 md:space-y-0 md:space-x-4">
+          {Object.keys(emotionData).map((emotion) => (
+            <div
+              key={emotion}
+              className="relative bg-gray-200 w-full md:w-1/3 rounded-lg cursor-pointer hover:bg-gray-300 transition-colors"
+              onClick={() => openModal(emotion)}
+              style={{ borderRadius: '12px', overflow: 'hidden' }}
+            >
+              <img src={emotionData[emotion].img} alt={emotion} className="w-full h-full object-cover" style={{ borderRadius: '12px', objectFit: 'cover' }} /> {/* Updated styles */}
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <p className="text-white font-bold text-lg">{emotion}</p>
+              </div>
+            </div>
+          ))}
         </section>
-
       </main>
 
-      <footer className="bg-white text-black py-12 bg-[#3C3956]">
-        <div className="flex flex-col md:flex-row justify-around">
-          <div className="mb-8 md:mb-0">
-            <h4 className="font-semibold text-center md:text-left">Product</h4>
-            <ul className="mt-4 space-y-2 text-center md:text-left">
-              <li>Pricing</li>
-              <li>Solutions</li>
-              <li>Education</li>
-              <li>Team plans</li>
-            </ul>
+      <footer className="bg-[#3C3956] text-white py-12 text-center">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2">
+                <li className="hover:text-gray-400 cursor-pointer">Pricing</li>
+                <li className="hover:text-gray-400 cursor-pointer">Solutions</li>
+                <li className="hover:text-gray-400 cursor-pointer">Education</li>
+                <li className="hover:text-gray-400 cursor-pointer">Team plans</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">About us</h4>
+              <ul className="space-y-2">
+                <li className="hover:text-gray-400 cursor-pointer">About</li>
+                <li className="hover:text-gray-400 cursor-pointer">Branding</li>
+                <li className="hover:text-gray-400 cursor-pointer">Newsroom</li>
+                <li className="hover:text-gray-400 cursor-pointer">Partnerships</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Resources</h4>
+              <ul className="space-y-2">
+                <li className="hover:text-gray-400 cursor-pointer">Careers</li>
+                <li className="hover:text-gray-400 cursor-pointer">Blog</li>
+                <li className="hover:text-gray-400 cursor-pointer">Developers</li>
+                <li className="hover:text-gray-400 cursor-pointer">Support</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Social Media</h4>
+              <ul className="space-y-2">
+                <li className="hover:text-gray-400 cursor-pointer">Instagram</li>
+                <li className="hover:text-gray-400 cursor-pointer">Facebook</li>
+                <li className="hover:text-gray-400 cursor-pointer">Twitter</li>
+                <li className="hover:text-gray-400 cursor-pointer">LinkedIn</li>
+              </ul>
+            </div>
           </div>
-          <div className="mb-8 md:mb-0">
-            <h4 className="font-semibold text-center md:text-left">About us</h4>
-            <ul className="mt-4 space-y-2 text-center md:text-left">
-              <li>About</li>
-              <li>Branding</li>
-              <li>Newsroom</li>
-              <li>Partnerships</li>
-              <li>Affiliates</li>
-              <li>Careers</li>
-            </ul>
-          </div>
-          <div className="mb-8 md:mb-0">
-            <h4 className="font-semibold text-center md:text-left">Help and support</h4>
-            <ul className="mt-4 space-y-2 text-center md:text-left">
-              <li>Help center</li>
-              <li>Contact us</li>
-              <li>Privacy & Terms</li>
-              <li>Safety information</li>
-              <li>Sitemap</li>
-            </ul>
-          </div>
-          <div className="text-center md:text-left">
-            <h4 className="font-semibold">Community</h4>
-            <ul className="mt-4 space-y-2 text-center md:text-left">
-              <li>Agencies</li>
-              <li>Freelancers</li>
-              <li>Engineers</li>
-            </ul>
-          </div>
-        </div>
-        <div className="flex justify-center md:justify-start mt-8 space-x-4">
-          <a href="#" className="text-white">App Store</a>
-          <a href="#" className="text-white">Google Play</a>
-        </div>
-        <div className="text-center mt-8">
-          <p>&copy; 2024 Help Privacy Terms</p>
         </div>
       </footer>
+
+      {isModalOpen && selectedEmotion && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
+          onClick={handleOverlayClick} // Added overlay click handler
+        >
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center max-w-lg mx-auto relative" style={{ borderRadius: '12px' }}>
+            <h3 className="text-xl font-semibold mb-4">{selectedEmotion}</h3>
+            <img
+              src={emotionData[selectedEmotion].img}
+              alt={selectedEmotion}
+              className="w-full max-w-md mx-auto mb-4"
+              style={{ borderRadius: '12px', objectFit: 'cover', width: '100%', height: 'auto' }} // Updated styles
+            />
+            <p className="mb-4">{emotionData[selectedEmotion].description}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default Home;
