@@ -129,11 +129,12 @@ const QA: React.FC = () => {
           <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-2xl font-bold mb-4">Example Questions</h2>
             <ul className="list-disc pl-5 mb-4">
-              <li>What is the definition of mental health?</li>
+              <li>How can you help a friend who is experiencing mental health issues?</li>
               <li>How can you maintain mental health?</li>
               <li>What are the signs that someone is experiencing a mental health disorder?</li>
-              <li>How can you detect depression in yourself?</li>
-              <li>What is the difference between normal anxiety and an anxiety disorder?</li>
+              <li>What factors can influence a person's mental health?</li>
+              <li>How can you manage stress?</li>
+              <li>How do antidepressant medications work?</li>
             </ul>
             <button
               className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#3C3956] hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
